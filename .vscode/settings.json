@@ -1,0 +1,7 @@
+{
+    "git.ignoreLimitWarning": true,
+    "graalvm.home": "",
+    "graalvm.installations": [
+        ""
+    ]
+}
