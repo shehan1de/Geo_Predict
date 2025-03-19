@@ -14,7 +14,7 @@ const WelcomePage = () => {
         </p>
         <button
           className="btn btn-light btn-lg mt-3"
-          onClick={() => navigate("/predict")}
+          onClick={() => navigate("/login")}
         >
           Get Started
         </button>
