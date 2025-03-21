@@ -5,6 +5,7 @@ const crypto = require("crypto");
 const sendResetEmail = require("../Service/emailService");
 const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
+const path = require("path");
 
 
 const registerUser = async (req, res) => {
@@ -20,11 +21,19 @@ const registerUser = async (req, res) => {
         if (existingUser) {
             return res.status(400).json({ message: "User already exists" });
         }
+
+        // Hash the password before saving
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Default profile picture path
+        const defaultProfilePath = "images/defaultProfile.jpg";
+
         const newUser = new User({
             name,
             email,
-            password,
-            role
+            password: hashedPassword,
+            role,
+            profilePicture: defaultProfilePath,
         });
 
         const savedUser = await newUser.save();
@@ -37,15 +46,18 @@ const registerUser = async (req, res) => {
                 name: savedUser.name,
                 email: savedUser.email,
                 role: savedUser.role,
+                profilePicture: savedUser.profilePicture,
                 createdAt: savedUser.createdAt
             }
         });
     } catch (error) {
+        console.error("Register Error:", error);
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
 
 module.exports = { registerUser };
+
 
 
 const login = async (req, res) => {

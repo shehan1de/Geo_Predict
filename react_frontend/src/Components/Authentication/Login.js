@@ -60,7 +60,7 @@ const Login = () => {
         toast.success("Login Successful!", { position: "top-right", autoClose: 2000 });
 
         setTimeout(() => {
-          navigate(data.user.role === "Admin" ? "/dashboard" : "/predict");
+          navigate(data.user.role === "Admin" ? "/users" : "/predict");
         }, 2000);
       }
     } catch (error) {

@@ -1,5 +1,7 @@
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import Users from "./Components/Admin/Users";
+import AddUsers from "./Components/Admin/AddUser";
+import EditUserPopup from "./Components/Admin/EditUserPopup";
+import Users from "./Components/Admin/ViewUsers";
 import ForgotPassword from "./Components/Authentication/ForgotPassword";
 import Login from "./Components/Authentication/Login";
 import Register from "./Components/Authentication/Register";
@@ -11,7 +13,6 @@ import Dashboard from "./Components/Pages/Dashboard";
 import Profile from "./Components/Pages/Profile";
 import Prediction from "./Components/Prediction/Prediction";
 import Welcome from "./Components/Welcome";
-
 function App() {
     const location = useLocation();
     const user = JSON.parse(localStorage.getItem("user"));
@@ -40,6 +41,8 @@ function App() {
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/users" element={<Users />} />
                         <Route path="/profile" element={<Profile />} />
+                        <Route path="/addUsers" element={<AddUsers />} />
+                        <Route path="/updateUser" element={<EditUserPopup />} />
                     </>
                 )}
 
