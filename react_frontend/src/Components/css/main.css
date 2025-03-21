@@ -1,3 +1,114 @@
+/* Full-screen layout */
+.welcome-container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    color: white;
+    animation: gradientShift 6s ease infinite;
+    overflow: hidden;
+}
+
+/* Background image opacity with overlay */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, rgba(0, 51, 102, 0.7), rgba(12, 132, 245, 0.7), rgba(101, 185, 245, 0.7));
+    background-size: 400% 400%;
+    animation: gradientShift 6s ease infinite;
+    opacity: 0.85; /* Control image visibility */
+}
+
+/* Text content in center */
+.content {
+    position: relative;
+    z-index: 1;
+    max-width: 600px;
+    text-align: center;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+/* Title and subtitle styling */
+.title {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.subtitle {
+    font-size: 1.4rem;
+    margin-bottom: 30px;
+}
+
+/* Smooth background gradient animation */
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Fade-out and slide-up animation */
+.fade-out {
+    animation: fadeOut 0.8s ease-in-out forwards;
+}
+
+.slide-up {
+    animation: slideUp 0.8s ease-in-out forwards;
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(0); }
+    to { transform: translateY(-50px); }
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Button styling */
+.btn-light {
+    font-weight: bold;
+    padding: 12px 28px;
+    border-radius: 25px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-light:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* Center the login form */
 .login-container {
     max-width: 400px;
@@ -100,3 +211,76 @@
     font-weight: bolder;
     transition: 0.3s ease-in-out;
 }
+
+
+
+
+
+
+.navbar {
+    background: linear-gradient(90deg, #0056b3, #007bff); /* Premium gradient */
+    padding: 12px 0;
+}
+
+.navbar-brand img {
+    height: 145px;
+    max-height: 50px;
+    margin-left: -100px;
+    border-radius: 20px;
+    
+}
+
+.nav-item-custom {
+    font-size: 16px;
+    font-weight: 500;
+    color: white !important;
+    transition: all 0.3s ease-in-out;
+    padding: 8px 15px;
+}
+
+.nav-item-custom:hover {
+    color: #ffcc00 !important;
+    text-shadow: 0 0 5px rgba(255, 204, 0, 0.8);
+}
+
+.btn-danger {
+    font-weight: 600;
+    background: #dc3545;
+    border: none;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+    transform: scale(1.05);
+}
+
+
+
+
+
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full screen height */
+  }
+  
+  .spinner-border-lg {
+    width: 4rem;  /* Increase size */
+    height: 4rem;
+  }
+
+
+
+
+  .back-button {
+    position: absolute;
+    top: 70px;
+    left: 420px;
+    font-size: 1.8rem;
+    background: none;
+    border: none;
+    color: #333;
+    cursor: pointer;
+  }

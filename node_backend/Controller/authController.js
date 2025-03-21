@@ -6,6 +6,7 @@ const sendResetEmail = require("../Service/emailService");
 const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
 
+
 const registerUser = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -19,31 +20,46 @@ const registerUser = async (req, res) => {
         if (existingUser) {
             return res.status(400).json({ message: "User already exists" });
         }
+        const newUser = new User({
+            name,
+            email,
+            password,
+            role
+        });
 
-        const newUser = new User({ name, email, password, role });
-        await newUser.save();
+        const savedUser = await newUser.save();
 
-        res.status(201).json({ message: "User registered successfully" });
+        res.status(201).json({
+            message: "User registered successfully",
+            user: {
+                _id: savedUser._id,
+                userId: savedUser.userId,
+                name: savedUser.name,
+                email: savedUser.email,
+                role: savedUser.role,
+                createdAt: savedUser.createdAt
+            }
+        });
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
 
+module.exports = { registerUser };
+
+
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Find the user by email
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(400).json({ message: "Invalid credentials" });
         }
 
-        // Debugging logs
         console.log("🔎 User Password from DB:", user.password);
         console.log("🔎 Entered Password:", password);
 
-        // Compare passwords
         const isMatch = await bcrypt.compare(password, user.password);
         console.log("🔍 Password Match:", isMatch);
 
@@ -51,14 +67,12 @@ const login = async (req, res) => {
             return res.status(400).json({ message: "Invalid credentials" });
         }
 
-        // Generate JWT Token
         const token = jwt.sign(
             { userId: user._id, name: user.name, email: user.email, role: user.role },
-            process.env.JWT_SECRET, // Ensure you have a secret key in your .env file
-            { expiresIn: "1h" } // Token expiration time
+            process.env.JWT_SECRET,
+            { expiresIn: "1h" }
         );
 
-        // Send user details along with the token
         res.status(200).json({
             message: "Login successful",
             token,
@@ -103,6 +117,36 @@ const requestPasswordReset = async (req, res) => {
     }
 };
 
+
+const verifyResetCode = async (req, res) => {
+    try {
+        console.log("Request Body:", req.body);
+        
+        const { email, code } = req.body;
+        
+        if (!email || !code) {
+            return res.status(400).json({ message: "Email and verification code are required" });
+        }
+
+        const user = await User.findOne({ email });
+        if (!user || !user.resetToken) {
+            return res.status(400).json({ message: "Invalid or expired code" });
+        }
+
+        const isMatch = await bcrypt.compare(code, user.resetToken);
+        if (!isMatch) {
+            return res.status(400).json({ message: "Invalid verification code" });
+        }
+
+        res.json({ message: "Code verified successfully" });
+
+    } catch (error) {
+        console.error("Verification Error:", error);
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+
 const resetPassword = async (req, res) => {
     try {
         const { email, newPassword } = req.body;
@@ -122,4 +166,4 @@ const resetPassword = async (req, res) => {
     }
 };
 
-module.exports = { registerUser, login, logoutUser, requestPasswordReset, resetPassword };
+module.exports = { registerUser, login, logoutUser, requestPasswordReset, verifyResetCode, resetPassword };

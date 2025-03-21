@@ -1,11 +1,10 @@
-import React from "react";
-import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Users from "./Components/Admin/Users";
-import { useAuth } from "./Components/Authentication/AuthContext";
 import ForgotPassword from "./Components/Authentication/ForgotPassword";
 import Login from "./Components/Authentication/Login";
 import Register from "./Components/Authentication/Register";
 import ResetPassword from "./Components/Authentication/ResetPassword";
+import VerifyEmail from "./Components/Authentication/VerifyEmail";
 import Navbar from "./Components/Navigation Bar/NavBar";
 import About from "./Components/Pages/About";
 import Dashboard from "./Components/Pages/Dashboard";
@@ -14,12 +13,17 @@ import Prediction from "./Components/Prediction/Prediction";
 import Welcome from "./Components/Welcome";
 
 function App() {
-    const { user } = useAuth() || {};
-    const role = user?.role;
+    const location = useLocation();
+    const user = JSON.parse(localStorage.getItem("user"));
+    const role = user?.role || null;
+
+    // Hide Navbar on these pages
+    const hideNavbarRoutes = ["/"];
+    const showNavbar = !hideNavbarRoutes.includes(location.pathname);
 
     return (
-        <Router>
-            <Navbar /> {/* ✅ Add Navbar */}
+        <>
+            {showNavbar && <Navbar />}
             <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<Welcome />} />
@@ -27,9 +31,10 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/verify-code" element={<VerifyEmail />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
 
-                {/* Role-Based Routes */}
+                {/* Admin Routes */}
                 {role === "Admin" && (
                     <>
                         <Route path="/dashboard" element={<Dashboard />} />
@@ -37,6 +42,8 @@ function App() {
                         <Route path="/profile" element={<Profile />} />
                     </>
                 )}
+
+                {/* Client Routes */}
                 {role === "Client" && (
                     <>
                         <Route path="/predict" element={<Prediction />} />
@@ -47,7 +54,7 @@ function App() {
                 {/* Redirect unknown routes */}
                 <Route path="*" element={<Navigate to={user ? "/profile" : "/login"} replace />} />
             </Routes>
-        </Router>
+        </>
     );
 }
 

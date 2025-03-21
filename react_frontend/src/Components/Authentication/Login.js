@@ -1,105 +1,124 @@
+import axios from "axios";
 import React, { useState } from "react";
-import { Toaster, toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../Authentication/AuthContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "../css/main.css";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { setUser } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
+  const validateForm = () => {
+    let valid = true;
+    let errors = {};
+
+    if (!email.trim()) {
+      errors.email = "Email is required";
+      valid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.email = "Invalid email format";
+      valid = false;
+    }
+
+    if (!password.trim()) {
+      errors.password = "Password is required";
+      valid = false;
+    }
+
+    setErrors(errors);
+    return valid;
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
-  
+    if (!validateForm()) return;
+
+    setLoading(true);
+
     try {
-      const response = await fetch("http://localhost:5001/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-  
-      const data = await response.json();
-  
-      if (response.ok) {
-        setUser({
-          token: data.token,
-          id: data.user.id,
-          name: data.user.name,
-          email: data.user.email,
-          role: data.user.role,
-        });
-  
+      const response = await axios.post(
+        "/api/auth/login",
+        { email, password },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      const data = response.data;
+
+      if (response.status === 200) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-  
-        // First notification: Login successful
-        toast.success("Login Successful!");
-  
-        // Second notification: Redirecting message
+
+        toast.success("Login Successful!", { position: "top-right", autoClose: 2000 });
+
         setTimeout(() => {
-          toast("Redirecting to your dashboard...", { icon: "🔄" });
-  
           navigate(data.user.role === "Admin" ? "/dashboard" : "/predict");
-        }, 1500); // Slight delay before showing the second message
-      } else {
-        toast.error(data.message || "Login failed. Try again.");
+        }, 2000);
       }
     } catch (error) {
-      toast.error("Server error. Please try again later.");
+      toast.error(` ${error.response?.data?.message || "Login failed. Try again."}`, {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="login-container">
-      <Toaster position="top-right" />
-      <h2 className="login-title">Login</h2>
-      <form className="login-form" onSubmit={handleLogin}>
-        <div className="mb-3">
-          <label className="form-label">Email</label>
-          <input
-            type="email"
-            className="form-control"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
+      <ToastContainer />
 
-        <div className="mb-3 position-relative">
-          <label className="form-label">Password</label>
-          <div className="input-group">
-            <input
-              type={showPassword ? "text" : "password"}
-              className="form-control"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <span className="input-group-text" onClick={togglePasswordVisibility}>
-              <i className={showPassword ? "bi bi-eye-slash" : "bi bi-eye"}></i>
-            </span>
+      {loading ? (
+        // Show only spinner when loading
+        <div className="loading-spinner">
+          <div className="spinner-border text-primary spinner-border-lg"></div>
+        </div>
+      ) : (
+        // Show form when not loading
+        <>
+          <h2 className="login-title">GeoPredict Sign in</h2>
+          <form className="login-form" onSubmit={handleLogin}>
+            <div className="mb-3">
+              <label className="form-label">Email</label>
+              <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} />
+              {errors.email && <p className="error-text">{errors.email}</p>}
+            </div>
+
+            <div className="mb-3 position-relative">
+              <label className="form-label">Password</label>
+              <div className="input-group">
+                <input type={showPassword ? "text" : "password"} className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <span className="input-group-text" onClick={togglePasswordVisibility}>
+                  <i className={showPassword ? "bi bi-eye-slash" : "bi bi-eye"}></i>
+                </span>
+              </div>
+              {errors.password && <p className="error-text">{errors.password}</p>}
+            </div>
+
+            <div className="fp">
+              <a href="/forgot-password" className="text-danger">Forgot Password?</a>
+            </div>
+
+            <button type="submit" className="btn login-btn" disabled={loading}>
+              {loading ? <span className="spinner-border spinner-border-sm"></span> : "Login"}
+            </button>
+          </form>
+
+          <div className="auth-links">
+            <span>Do you not have an account? </span>
+            <a href="/register" className="text-primary">Sign Up</a>
           </div>
-        </div>
-        <div className="fp">
-        <a href="/forgot-password" className="text-danger">Forgot Password?</a>
-        </div>
-        
-        <button type="submit" className="btn login-btn">Login</button>
-      </form>
-      
-      <div className="auth-links">
-        <span>Do you not have an account? </span>
-        <a href="/register" className="text-primary">Sign Up</a>
-        <br />
-        
-      </div>
+        </>
+      )}
     </div>
   );
 };
