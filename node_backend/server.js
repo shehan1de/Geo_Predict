@@ -6,6 +6,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const authRoutes = require("./Route/authRoutes");
 const userRoutes = require("./Route/userRoutes");
+//const predictionRoutes = require("./Route/prediction");
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ app.use((req, res, next) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+//app.use("/api/predictions", predictionRoutes);
 
 app.use("/image", express.static(path.join(__dirname, "image")));
 console.log("Serving images from:", path.join(__dirname, "image"));

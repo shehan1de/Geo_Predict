@@ -11,26 +11,22 @@ const Navbar = ({ onLogout }) => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        // Notify user before clearing storage
         toast.success("Logged out successfully!", {
             position: "top-center",
-            autoClose: 2000, // Message shows for 2 sec
+            autoClose: 2000,
         });
 
-        // Delay clearing storage & navigation
         setTimeout(() => {
             localStorage.removeItem("user");
             localStorage.removeItem("role");
-
-            if (onLogout) onLogout(); // Update state
-
-            navigate("/login"); // Redirect to login
+            if (onLogout) onLogout();
+            navigate("/login");
         }, 2000);
     };
 
     return (
         <>
-            <ToastContainer /> {/* Ensure Toasts render */}
+            <ToastContainer />
             <nav className="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm py-2">
                 <div className="container">
                     <Link className="navbar-brand d-flex align-items-center" to="/">
@@ -74,13 +70,19 @@ const Navbar = ({ onLogout }) => {
                                             <Link className="nav-link" to="/users">Users</Link>
                                         </li>
                                     ) : (
-                                        <li className="nav-item">
-                                            <Link className="nav-link" to="/predict">Prediction</Link>
-                                        </li>
+                                        <>
+                                            <li className="nav-item">
+                                                <Link className="nav-link" to="/predict">Prediction</Link>
+                                            </li>
+                                            <li className="nav-item">
+                                                <Link className="nav-link" to="/compare">Compare</Link>
+                                            </li>
+                                            <li className="nav-item">
+                                                <Link className="nav-link" to="/prediction-history">Prediction History</Link>
+                                            </li>
+                                        </>
                                     )}
-                                    <li className="nav-item">
-                                        <Link className="nav-link" to="/profile">Profile</Link>
-                                    </li>
+                                    
                                     <li className="nav-item">
                                         <button 
                                             className="btn btn-danger ms-3 rounded-pill px-3" 

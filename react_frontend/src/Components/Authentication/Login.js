@@ -56,6 +56,7 @@ const Login = () => {
       if (response.status === 200) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("userId", data.user.id);
 
         toast.success("Login Successful!", { position: "top-right", autoClose: 2000 });
 
@@ -78,12 +79,10 @@ const Login = () => {
       <ToastContainer />
 
       {loading ? (
-        // Show only spinner when loading
         <div className="loading-spinner">
           <div className="spinner-border text-primary spinner-border-lg"></div>
         </div>
       ) : (
-        // Show form when not loading
         <>
           <h2 className="login-title">GeoPredict Sign in</h2>
           <form className="login-form" onSubmit={handleLogin}>

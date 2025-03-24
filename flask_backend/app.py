@@ -6,9 +6,8 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for frontend communication
+CORS(app)
 
-# Load model files with error handling
 try:
     encoded_address = joblib.load("model/encoded_address.pkl")
     if not isinstance(encoded_address, LabelEncoder):
@@ -33,7 +32,6 @@ except FileNotFoundError:
     print("Error: catboost_model.pkl not found.")
     final_model = None
 
-# Load address distance data
 try:
     address_distance_dict = joblib.load("model/address_distance_data.pkl")
 except FileNotFoundError:
@@ -53,18 +51,15 @@ def predict_price():
     if not address or not price_category:
         return jsonify({"error": "Missing input values"}), 400
 
-    # Check if model is available
     if final_model is None:
         return jsonify({"error": "Model not loaded. Please check the backend setup."}), 500
 
-    # Encode address safely
     if address in encoded_address.classes_:
         address_encoded = encoded_address.transform([address])[0]
     else:
         print(f"Error: Unknown address '{address}'")
         return jsonify({"error": "Unknown address"}), 400
 
-    # Encode price category
     price_category_mapping = {"Prime Area": 2, "Mid-range Area": 0, "Outer Area": 1}
     price_category_encoded = price_category_mapping.get(price_category)
     
@@ -72,24 +67,20 @@ def predict_price():
         print(f"Error: Invalid price category '{price_category}'")
         return jsonify({"error": "Invalid price category"}), 400
 
-    # Prepare input as a DataFrame
     user_input = pd.DataFrame([[address_encoded, price_category_encoded]], columns=["Address", "Price Category"])
 
-    # Scale input
     try:
         user_input_scaled = scaler.transform(user_input)
     except Exception as e:
         print(f"Error in scaling input: {e}")
         return jsonify({"error": "Scaling error. Please check the input data."}), 500
 
-    # Predict price
     try:
         predicted_price = final_model.predict(user_input_scaled)[0]
     except Exception as e:
         print(f"Prediction error: {e}")
         return jsonify({"error": "Prediction failed. Check the model."}), 500
 
-    # Get distance data
     distance_info = address_distance_dict.get(address, {})
 
     response = {

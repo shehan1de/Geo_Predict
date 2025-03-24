@@ -3,5 +3,6 @@
     "graalvm.home": "",
     "graalvm.installations": [
         ""
-    ]
+    ],
+    "python.analysis.autoImportCompletions": true
 }

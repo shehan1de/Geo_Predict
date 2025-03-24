@@ -22,10 +22,8 @@ const registerUser = async (req, res) => {
             return res.status(400).json({ message: "User already exists" });
         }
 
-        // Hash the password before saving
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Default profile picture path
         const defaultProfilePath = "images/defaultProfile.jpg";
 
         const newUser = new User({
@@ -89,10 +87,8 @@ const login = async (req, res) => {
             message: "Login successful",
             token,
             user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
+                id: user._id, name: user.name,
+                email: user.email, role: user.role,
             },
         });
 
@@ -115,20 +111,16 @@ const requestPasswordReset = async (req, res) => {
 
         const resetToken = crypto.randomInt(100000, 999999).toString();
 
-        const hashedToken = await bcrypt.hash(resetToken, 10);
+        const hashedToken = await bcrypt.hash(resetToken, 3);
         user.resetToken = hashedToken;
         user.resetTokenExpiry = Date.now() + 10 * 60 * 1000;
-
         await user.save();
-
         await sendResetEmail(email, resetToken);
-
         res.json({ message: "Verification code sent to email" });
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
-
 
 const verifyResetCode = async (req, res) => {
     try {
@@ -139,7 +131,6 @@ const verifyResetCode = async (req, res) => {
         if (!email || !code) {
             return res.status(400).json({ message: "Email and verification code are required" });
         }
-
         const user = await User.findOne({ email });
         if (!user || !user.resetToken) {
             return res.status(400).json({ message: "Invalid or expired code" });
@@ -149,7 +140,6 @@ const verifyResetCode = async (req, res) => {
         if (!isMatch) {
             return res.status(400).json({ message: "Invalid verification code" });
         }
-
         res.json({ message: "Code verified successfully" });
 
     } catch (error) {

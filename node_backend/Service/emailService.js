@@ -11,8 +11,7 @@ const sendResetEmail = async (to, resetToken) => {
             },
         });
 
-        // Correct local file path for attachment
-        const logoPath = path.join(__dirname, "../image/logo.png");  // Adjusted file path
+        const logoPath = path.join(__dirname, "../image/logo.png");
 
         const mailOptions = {
             from: `"GeoPredict Support" <${process.env.EMAIL_USER}>`,
@@ -20,14 +19,16 @@ const sendResetEmail = async (to, resetToken) => {
             subject: "🔑 Password Reset Request - GeoPredict",
             text: `Hello,\n\nYour password reset code is: ${resetToken}.\n\nIf you didn’t request this, please ignore it.`,
             html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;">
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;
+                background-color: #f9f9f9;">
                     <div style="text-align: center; margin-bottom: 20px;">
                         <img src="cid:geopredictlogo" alt="GeoPredict Logo" style="width: 120px; height: auto;">
                     </div>
                     <h2 style="color: #333; text-align: center;">🔑 Password Reset Request</h2>
                     <p>Hello,</p>
                     <p>We received a request to reset your password. Use the verification code below to proceed:</p>
-                    <div style="text-align: center; background: #007bff; color: white; font-size: 20px; font-weight: bold; padding: 10px; border-radius: 5px; width: fit-content; margin: auto;">
+                    <div style="text-align: center; background: #007bff; color: white; font-size: 20px; font-weight: bold; padding: 10px; border-radius: 5px;
+                    width: fit-content; margin: auto;">
                         ${resetToken}
                     </div>
                     <p style="margin-top: 20px;">If you didn’t request this, please ignore this email.</p>
@@ -39,8 +40,8 @@ const sendResetEmail = async (to, resetToken) => {
             attachments: [
                 {
                     filename: "logo.png",
-                    path: logoPath,  // Correct file path
-                    cid: "geopredictlogo", // Must match img src="cid:geopredictlogo"
+                    path: logoPath,
+                    cid: "geopredictlogo",
                 },
             ],
         };

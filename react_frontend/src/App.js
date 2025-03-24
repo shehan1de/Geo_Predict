@@ -8,9 +8,11 @@ import Register from "./Components/Authentication/Register";
 import ResetPassword from "./Components/Authentication/ResetPassword";
 import VerifyEmail from "./Components/Authentication/VerifyEmail";
 import Navbar from "./Components/Navigation Bar/NavBar";
+import ProfileContainer from "./Components/Navigation Bar/ProfileContainer";
 import About from "./Components/Pages/About";
 import Dashboard from "./Components/Pages/Dashboard";
 import Profile from "./Components/Pages/Profile";
+import Compare from "./Components/Prediction/Compare";
 import Prediction from "./Components/Prediction/Prediction";
 import Welcome from "./Components/Welcome";
 function App() {
@@ -40,9 +42,12 @@ function App() {
                     <>
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/users" element={<Users />} />
-                        <Route path="/profile" element={<Profile />} />
+                        <Route path="/profile" element={<Profile />}>
+                            <Route path="" element={<ProfileContainer />} />
+                        </Route>
                         <Route path="/addUsers" element={<AddUsers />} />
                         <Route path="/updateUser" element={<EditUserPopup />} />
+                        
                     </>
                 )}
 
@@ -50,6 +55,7 @@ function App() {
                 {role === "Client" && (
                     <>
                         <Route path="/predict" element={<Prediction />} />
+                        <Route path="/compare" element={<Compare />} />
                         <Route path="/profile" element={<Profile />} />
                     </>
                 )}

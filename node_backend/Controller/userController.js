@@ -3,10 +3,8 @@ const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const path = require('path');
 
-// Define the path for the default profile picture
 const defaultProfilePath = "images/defaultProfile.jpg";
 
-// Helper function to get full profile picture URL
 const getProfilePictureUrl = (profilePicture) => {
     return `${process.env.BASE_URL}/${profilePicture}`;
 };
