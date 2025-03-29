@@ -26,9 +26,9 @@ const ViewUsers = () => {
 
   const formatDateTime = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleString('en-US', { 
-      year: 'numeric', month: 'short', day: '2-digit', 
-      hour: '2-digit', minute: '2-digit', second: '2-digit' 
+    return date.toLocaleString('en-US', {
+      year: 'numeric', month: 'short', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit'
     });
   };
 
@@ -60,9 +60,9 @@ const handleDelete = async (userId) => {
               setUsers(users.filter((user) => user.userId !== userId));
               setFilteredUsers(filteredUsers.filter((user) => user.userId !== userId));
             } catch (err) {
-              toast.error('Error deleting user!');
+              toast.error('Error deleting user!', { duration: 3000 });
             }
-            toast.dismiss(); // Close the toast after clicking
+            toast.dismiss();
           }}
         >
           Yes, Delete
@@ -100,14 +100,14 @@ const handleDelete = async (userId) => {
     <div className="container mt-4">
       <input
         type="text"
-        className="form-control mb-3"
+        className="form-control mb-3 "
         placeholder="Search by Name, Email, or UserID"
         value={searchQuery}
         onChange={handleSearch}
       />
 
       <button
-        onClick={() => (window.location.href = '/addUsers')}
+        onClick={() => (window.location.href = '/add-users')}
         className="btn-add-user mb-3"
       >
         <i className="bi bi-plus-circle"></i> Add User
@@ -183,10 +183,10 @@ const handleDelete = async (userId) => {
       </div>
 
       {selectedUser && (
-        <EditUserPopup 
-          user={selectedUser} 
-          onClose={handleClosePopup} 
-          onUserUpdated={handleUserUpdated} 
+        <EditUserPopup
+          user={selectedUser}
+          onClose={handleClosePopup}
+          onUserUpdated={handleUserUpdated}
         />
       )}
     </div>

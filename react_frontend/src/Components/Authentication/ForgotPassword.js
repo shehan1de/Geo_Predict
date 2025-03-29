@@ -43,12 +43,10 @@ const ForgotPassword = () => {
     <div className="login-container">
       <ToastContainer autoClose={3000} />
 
-      {/* Back Button (Top Left Corner) */}
       <button className="btn back-button" onClick={() => navigate("/login")}>
         <i className="bi bi-arrow-left-circle-fill"></i>
       </button>
 
-      {/* Forgot Password Section */}
       <div className="text-center">
         <h2 className="login-title">Forgot Password</h2>
         <p className="instruction-text text-muted">

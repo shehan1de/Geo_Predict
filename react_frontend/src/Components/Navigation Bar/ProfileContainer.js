@@ -1,42 +1,52 @@
+import axios from 'axios';
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const ProfileContainer = () => {
-  const [profilePicture, setProfilePicture] = useState(null);
-  const [userName, setUserName] = useState("");
+  const userId = localStorage.getItem("userId");
+  const [user, setUser] = useState(null);
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
-    const storedProfilePicture = localStorage.getItem("profilePicture");
-    const storedUserName = localStorage.getItem("userName");
+    const fetchUserDetails = async () => {
+      try {
+        const response = await axios.get(`/api/users/user/${userId}`);
+        setUser(response.data);
+      } catch (error) {
+        console.error("Error fetching user data", error);
+      }
+    };
 
-    if (storedProfilePicture) {
-      setProfilePicture(storedProfilePicture);
-    } else {
-      setProfilePicture("http://localhost:5001/image/defaultProfile.jpg");
+    if (userId) {
+      fetchUserDetails();
     }
+  }, [userId]);
 
-    if (storedUserName) {
-      setUserName(storedUserName);
-    }
-  }, []); // Run once on component mount
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+
+  const profilePicture = user.profilePicture;
+  const profileImgUrl = profilePicture
+    ? `/image/${user.profilePicture.split('/').pop()}`
+    : '/image/defaultProfile.jpg';
 
   return (
-    <div className="profile-container">
-      <div className="card shadow-lg p-4">
-        <h3 className="text-center">User Profile</h3>
-
-        <div className="text-center">
-         
-          <img
-            src={profilePicture}
-            alt="Profile"
-            className="img-fluid rounded-circle"
-            style={{ width: "150px", height: "150px" }}
-          />
-        </div>
-
-        <h4 className="text-center mt-3">{userName || "No Name Available"}</h4>
+    <Link to="/profileEdit" className="profile-container-link">
+      <div
+        className="profile-container"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <img src={profileImgUrl} alt="Profile" className="profile-img" />
+        {isHovered && (
+          <div className="profile-info">
+            <h3>{user.name}</h3>
+            <p>{user.email}</p>
+          </div>
+        )}
       </div>
-    </div>
+    </Link>
   );
 };
 

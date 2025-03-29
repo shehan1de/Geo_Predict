@@ -28,13 +28,13 @@ const EditUserPopup = ({ user, onClose, onUserUpdated }) => {
       <div className="modal-content">
         <h4>Edit User</h4>
 
-        <label>User ID:</label>
+        <label>User ID</label>
         <input type="text" className="form-control readonly-field" value={user.userId} readOnly />
 
-        <label>Email:</label>
+        <label>Email</label>
         <input type="email" className="form-control readonly-field" value={user.email} readOnly />
 
-        <label>Name:</label>
+        <label>Name</label>
         <input
           type="text"
           className="form-control"
@@ -42,7 +42,7 @@ const EditUserPopup = ({ user, onClose, onUserUpdated }) => {
           onChange={(e) => setName(e.target.value)}
         />
 
-        <label>Role:</label>
+        <label>Role</label>
         <div className="dropdown-wrapper">
           <select className="form-control dropdown" value={role} onChange={(e) => setRole(e.target.value)}>
             <option value="Admin">Admin</option>

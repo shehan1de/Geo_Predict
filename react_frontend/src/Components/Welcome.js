@@ -1,8 +1,8 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import welcomeImage from "../image/main.jpg"; // Import the image
-import "./css/main.css"; // Import the CSS file
+import welcomeImage from "../image/main.jpg";
+import "./css/main.css";
 
 const WelcomePage = () => {
   const navigate = useNavigate();
@@ -11,7 +11,7 @@ const WelcomePage = () => {
   const handleGetStarted = () => {
     setFadeOut(true);
     setTimeout(() => {
-      navigate("/login");
+      navigate("/home");
     }, 800);
   };
 
@@ -20,7 +20,7 @@ const WelcomePage = () => {
       className={`welcome-container ${fadeOut ? "fade-out slide-up" : ""}`}
       style={{ backgroundImage: `url(${welcomeImage})` }}
     >
-      <div className="overlay"></div> {/* Color Overlay */}
+      <div className="overlay"></div>
       <div className="content">
         <h1 className="title">Welcome to GeoPredict</h1>
         <p className="subtitle">

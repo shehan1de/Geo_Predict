@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import React, { useEffect, useState } from "react";
+import { toast } from 'react-toastify';
 import "../css/main.css";
 
 export default function Prediction() {
@@ -25,7 +26,7 @@ export default function Prediction() {
       }
     };
     fetchUser();
-
+  
     const fetchAddresses = async () => {
       try {
         const response = await axios.get("http://127.0.0.1:5000/get_addresses");
@@ -36,30 +37,69 @@ export default function Prediction() {
     };
     fetchAddresses();
   }, []);
-
+  
   const fetchPrediction = async (address, priceCategory) => {
     try {
       const response = await axios.post("http://127.0.0.1:5000/predict", {
         address,
         price_category: priceCategory,
       });
-      setPrediction(response.data);
+      return response.data; // Return prediction data
     } catch (err) {
       setError(err.response?.data?.error || "Error fetching prediction.");
+      return null; // Return null if there's an error
     }
   };
-
+  
+  const savePrediction = async (address, priceCategory, predictedPrice, userId) => {
+    try {
+      const response = await axios.post("http://127.0.0.1:5000/save_prediction", {
+        userId,
+        address,
+        predictedPrice,
+        landType: priceCategory,
+      });
+  
+      console.log('Prediction saved:', response.data);
+    } catch (err) {
+      console.error("Error saving prediction:", err);
+    }
+  };
+  
   const handlePredict = async (e) => {
     e.preventDefault();
     setError("");
     setPrediction(null);
     setLoading(true);
-
-    await fetchPrediction(address, priceCategory);
-
+  
+    // Log to check if the values are correct
+    console.log('Selected address:', address);
+    console.log('Selected price category:', priceCategory);
+  
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      toast.error('User not logged in. Please log in again.');
+      setLoading(false);
+      return;
+    }
+  
+    try {
+      // Fetch the prediction data
+      const fetchedPrediction = await fetchPrediction(address, priceCategory);
+  
+      if (fetchedPrediction) {
+        // Once prediction is fetched, save it
+        savePrediction(address, priceCategory, fetchedPrediction.predicted_price, userId);
+        setPrediction(fetchedPrediction); // Optionally, update state with the prediction result
+      }
+  
+    } catch (err) {
+      setError(err.response?.data?.error || "Error fetching prediction.");
+    }
+  
     setLoading(false);
   };
-
+  
   const downloadPDF = () => {
     if (!prediction) {
       alert("Prediction data is missing.");
@@ -212,7 +252,7 @@ export default function Prediction() {
                 </div>
               )}
 
-              {error && <p className="mt-3 text-danger text-center">{error}</p>}
+              {error && <div className="alert alert-danger mt-3">{error}</div>}
             </div>
           </div>
         </div>

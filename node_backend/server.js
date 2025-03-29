@@ -6,7 +6,12 @@ const cors = require("cors");
 const helmet = require("helmet");
 const authRoutes = require("./Route/authRoutes");
 const userRoutes = require("./Route/userRoutes");
-//const predictionRoutes = require("./Route/prediction");
+const queryRoutes = require("./Route/queryRoutes");
+const predictionRoutes = require("./Route/predictionRoutes");
+const reportRoutes = require("./Route/ReportRoutes");
+const uploadRoutes = require("./Route/upload");
+
+const { generateUserReport, generatePredictionReport } = require("./Service/reportService");
 
 dotenv.config();
 
@@ -32,7 +37,31 @@ app.use((req, res, next) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-//app.use("/api/predictions", predictionRoutes);
+app.use("/api/queries", queryRoutes);
+app.use("/api/predictions", predictionRoutes);
+
+app.use("/api", uploadRoutes);
+app.post("/api/reports/user", async (req, res) => {
+    const { startDate, endDate } = req.body;
+    try {
+        const reportPath = await generateUserReport(startDate, endDate);
+        res.status(200).send({ message: "User Report Generated", filePath: reportPath });
+    } catch (error) {
+        res.status(500).send({ message: error.message });
+    }
+});
+
+app.post("/api/reports/prediction", async (req, res) => {
+    const { startDate, endDate } = req.body;
+    try {
+        const reportPath = await generatePredictionReport(startDate, endDate);
+        res.status(200).send({ message: "Prediction Report Generated", filePath: reportPath });
+    } catch (error) {
+        res.status(500).send({ message: error.message });
+    }
+});
+
+app.use("/api/reports", reportRoutes);
 
 app.use("/image", express.static(path.join(__dirname, "image")));
 console.log("Serving images from:", path.join(__dirname, "image"));

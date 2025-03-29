@@ -71,7 +71,7 @@ const AddUser = () => {
         toast.success("User added successfully!", { position: "top-right", autoClose: 2000 });
 
         setTimeout(() => {
-          navigate("/users"); // Redirect to user list
+          navigate("/users");
         }, 2000);
       }
     } catch (error) {

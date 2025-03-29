@@ -13,10 +13,12 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
+  // Toggle password visibility
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
+  // Form validation
   const validateForm = () => {
     let valid = true;
     let errors = {};
@@ -38,6 +40,7 @@ const Login = () => {
     return valid;
   };
 
+  // Handle login action
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -54,9 +57,15 @@ const Login = () => {
       const data = response.data;
 
       if (response.status === 200) {
+        
+        const userId = String(data.user.userId);
+        const profilePicture=data.user.profilePicture;
+
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-        localStorage.setItem("userId", data.user.id);
+        localStorage.setItem("userId", userId);
+        localStorage.setItem("role", data.user.role);
+        localStorage.setItem("profilePicture",profilePicture);
 
         toast.success("Login Successful!", { position: "top-right", autoClose: 2000 });
 
@@ -88,14 +97,24 @@ const Login = () => {
           <form className="login-form" onSubmit={handleLogin}>
             <div className="mb-3">
               <label className="form-label">Email</label>
-              <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <input
+                type="email"
+                className="form-control"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
               {errors.email && <p className="error-text">{errors.email}</p>}
             </div>
 
             <div className="mb-3 position-relative">
               <label className="form-label">Password</label>
               <div className="input-group">
-                <input type={showPassword ? "text" : "password"} className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className="form-control"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
                 <span className="input-group-text" onClick={togglePasswordVisibility}>
                   <i className={showPassword ? "bi bi-eye-slash" : "bi bi-eye"}></i>
                 </span>
@@ -104,7 +123,9 @@ const Login = () => {
             </div>
 
             <div className="fp">
-              <a href="/forgot-password" className="text-danger">Forgot Password?</a>
+              <a href="/forgot-password" className="text-danger">
+                Forgot Password?
+              </a>
             </div>
 
             <button type="submit" className="btn login-btn" disabled={loading}>
@@ -114,7 +135,9 @@ const Login = () => {
 
           <div className="auth-links">
             <span>Do you not have an account? </span>
-            <a href="/register" className="text-primary">Sign Up</a>
+            <a href="/register" className="text-primary">
+              Sign Up
+            </a>
           </div>
         </>
       )}

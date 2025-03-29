@@ -7,7 +7,7 @@ import logo from "../../image/logo.png";
 
 const Navbar = ({ onLogout }) => {
     const user = localStorage.getItem("user");
-    const role = localStorage.getItem("role");
+    const role = (localStorage.getItem("role") || "").trim();  // Ensure role comparison works
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -19,6 +19,11 @@ const Navbar = ({ onLogout }) => {
         setTimeout(() => {
             localStorage.removeItem("user");
             localStorage.removeItem("role");
+            localStorage.removeItem("userId");
+            localStorage.removeItem("profilePicture");
+            localStorage.removeItem("peofilePicture");
+            localStorage.removeItem("token");
+            
             if (onLogout) onLogout();
             navigate("/login");
         }, 2000);
@@ -51,10 +56,11 @@ const Navbar = ({ onLogout }) => {
                     </button>
                     <div className="collapse navbar-collapse" id="navbarNav">
                         <ul className="navbar-nav ms-auto">
-                            {!user ? (
+                            {/* Before Login */}
+                            {!user && (
                                 <>
                                     <li className="nav-item">
-                                        <Link className="nav-link" to="/about">About</Link>
+                                        <Link className="nav-link" to="/home">Home</Link>
                                     </li>
                                     <li className="nav-item">
                                         <Link className="nav-link" to="/login">Login</Link>
@@ -63,13 +69,28 @@ const Navbar = ({ onLogout }) => {
                                         <Link className="nav-link" to="/register">Register</Link>
                                     </li>
                                 </>
-                            ) : (
+                            )}
+
+                            {/* If user is logged in */}
+                            {user && (
                                 <>
-                                    {role === "Admin" ? (
-                                        <li className="nav-item">
-                                            <Link className="nav-link" to="/users">Users</Link>
-                                        </li>
-                                    ) : (
+                                    {/* Admin Role */}
+                                    {role === "Admin" && (
+                                        <>
+                                            <li className="nav-item">
+                                                <Link className="nav-link" to="/users">User</Link>
+                                            </li>
+                                            <li className="nav-item">
+                                                <Link className="nav-link" to="/report">Reports</Link>
+                                            </li>
+                                            <li className="nav-item">
+                                                <Link className="nav-link" to="/query-history">Queries</Link>
+                                            </li>
+                                        </>
+                                    )}
+
+                                    {/* Client Role */}
+                                    {role === "Client" && (
                                         <>
                                             <li className="nav-item">
                                                 <Link className="nav-link" to="/predict">Prediction</Link>
@@ -78,11 +99,12 @@ const Navbar = ({ onLogout }) => {
                                                 <Link className="nav-link" to="/compare">Compare</Link>
                                             </li>
                                             <li className="nav-item">
-                                                <Link className="nav-link" to="/prediction-history">Prediction History</Link>
+                                                <Link className="nav-link" to="/predict-history">Prediction History</Link>
                                             </li>
                                         </>
                                     )}
-                                    
+
+                                    {/* Logout Button (Visible to both Admin & Client) */}
                                     <li className="nav-item">
                                         <button 
                                             className="btn btn-danger ms-3 rounded-pill px-3" 

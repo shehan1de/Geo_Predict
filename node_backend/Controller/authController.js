@@ -22,16 +22,14 @@ const registerUser = async (req, res) => {
             return res.status(400).json({ message: "User already exists" });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const defaultProfilePath = "images/defaultProfile.jpg";
+        const profilePicture = 'image/defaultProfile.jpg';
 
         const newUser = new User({
             name,
             email,
-            password: hashedPassword,
+            password,
             role,
-            profilePicture: defaultProfilePath,
+            profilePicture,
         });
 
         const savedUser = await newUser.save();
@@ -44,12 +42,11 @@ const registerUser = async (req, res) => {
                 name: savedUser.name,
                 email: savedUser.email,
                 role: savedUser.role,
-                profilePicture: savedUser.profilePicture,
-                createdAt: savedUser.createdAt
+                createdAt: savedUser.createdAt,
+                profilePicture: savedUser.profilePicture
             }
         });
     } catch (error) {
-        console.error("Register Error:", error);
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
@@ -58,45 +55,53 @@ module.exports = { registerUser };
 
 
 
+
 const login = async (req, res) => {
-    try {
-        const { email, password } = req.body;
+try {
+    const { email, password } = req.body;
 
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(400).json({ message: "Invalid credentials" });
-        }
+    const user = await User.findOne({ email });
 
-        console.log("🔎 User Password from DB:", user.password);
-        console.log("🔎 Entered Password:", password);
+    if (!user) {
+        return res.status(400).json({ message: "Invalid credentials" });
+    }
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        console.log("🔍 Password Match:", isMatch);
+    console.log("User Password from DB:", user.password);
+    console.log("Entered Password:", password);
 
-        if (!isMatch) {
-            return res.status(400).json({ message: "Invalid credentials" });
-        }
+    const isMatch = await bcrypt.compare(password, user.password);
 
-        const token = jwt.sign(
-            { userId: user._id, name: user.name, email: user.email, role: user.role },
-            process.env.JWT_SECRET,
-            { expiresIn: "1h" }
-        );
+    console.log("Password Match:", isMatch);
 
-        res.status(200).json({
-            message: "Login successful",
-            token,
-            user: {
-                id: user._id, name: user.name,
-                email: user.email, role: user.role,
-            },
-        });
+    if (!isMatch) {
+        return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    const token = jwt.sign(
+        { userId: user.userId, name: user.name, email: user.email, role: user.role, profilePicture:user.profilePicture},
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" }
+    );
+
+    return res.status(200).json({
+        message: "Login successful",
+        token,
+        user: {
+        userId: user.userId,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        profilePicture:user.profilePicture
+        },
+    });
 
     } catch (error) {
-        console.error("Login Error:", error);
-        res.status(500).json({ message: "Server error" });
+    console.error("Login Error:", error);
+    return res.status(500).json({ message: "Server error" });
     }
 };
+
+module.exports = { login };
 
 module.exports = { login };
 const logoutUser = (req, res) => {
@@ -167,5 +172,7 @@ const resetPassword = async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 };
+
+
 
 module.exports = { registerUser, login, logoutUser, requestPasswordReset, verifyResetCode, resetPassword };
